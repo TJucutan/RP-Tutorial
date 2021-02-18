@@ -1,0 +1,29 @@
+<!-- views/reviews-new.handlesbars -->
+
+<form method="POST" action="/reviews">
+    <fieldset>
+        <legend>New Review</legend>
+        <!-- TITLE -->
+        <p>
+            <label for="title">Title</label><br>
+            <input type="text" name="title" />
+        </p>
+
+        <!-- MOVE TITLE -->
+        <p>
+            <label for="movieTitle">Movie Title</label><br>
+            <input type="text" name="movieTitle" />
+        </p>
+
+        <!-- DESCRIPTION -->
+        <p>
+            <label for="description-text">Description</label><br>
+            <textarea id="description-text" name="description" rows="10" /></textarea>
+        </p>
+    </fieldset>
+
+    <!-- BUTTON -->
+    <p>
+        <button type="submit">Save Review</button>
+    </p>
+</form>

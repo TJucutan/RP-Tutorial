@@ -2,7 +2,9 @@ const express = require('express')
 const app = express()
 var exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 
+app.use(bodyParser.urlencoded({ extended: true}))
 mongoose.connect('mongodb://localhost/rotten-potatoes', { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.engine('handlebars', exphbs({ defaultLayout: 'main'}))
@@ -14,6 +16,7 @@ app.set('view engine', 'handlebars')
 
 const Reveiw = mongoose.model('Review', {
     title: String,
+    description: String,
     movieTitle: String
 })
 
@@ -24,13 +27,26 @@ const Reveiw = mongoose.model('Review', {
 // ]
 
 app.get('/', (req, res) => {
-    Reveiw.find()
+    Reveiw.find().lean()
         .then(reviews => {
             res.render('reviews-index', { reviews: reviews })
         })
         .catch(err => {
             console.log(err)
         })
+})
+
+app.get('/reviews/new', (req,res) => {
+    res.render('reviews-new', {})
+})
+
+app.post('/reviews', (req,res) => {
+    Reveiw.create(req.body).then((review) => {
+        console.log(review)
+        res.redirect('/')
+    }).catch((err) => {
+        console.log(err.message)
+    })
 })
 
 app.listen(3000, () => {
