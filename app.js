@@ -17,7 +17,8 @@ app.set('view engine', 'handlebars')
 const Reveiw = mongoose.model('Review', {
     title: String,
     description: String,
-    movieTitle: String
+    movieTitle: String,
+    rating: Number
 })
 
 // let reviews = [
@@ -40,10 +41,20 @@ app.get('/reviews/new', (req,res) => {
     res.render('reviews-new', {})
 })
 
+//Create
 app.post('/reviews', (req,res) => {
     Reveiw.create(req.body).then((review) => {
         console.log(review)
-        res.redirect('/')
+        res.redirect(`/reviews/${review._id}`)
+    }).catch((err) => {
+        console.log(err.message)
+    })
+})
+
+app.get('/reviews/:id', (req, res) => {
+    Reveiw.findById(req.params.id).lean()
+    .then((review) => {
+        res.render('reviews-show', { review: review })
     }).catch((err) => {
         console.log(err.message)
     })
