@@ -1,13 +1,22 @@
 const express = require('express')
 const app = express()
+const _handlebars = require('handlebars')
 var exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const methodOverride = require('method-override')
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
 
 app.use(bodyParser.urlencoded({ extended: true}))
 mongoose.connect('mongodb://localhost/rotten-potatoes', { useNewUrlParser: true, useUnifiedTopology: true });
 
-app.engine('handlebars', exphbs({ defaultLayout: 'main'}))
+// override with POST having ?_method=DELETE or ?_method=PUT
+app.use(methodOverride('_method'))
+
+app.engine('handlebars', exphbs({ 
+    defaultLayout: 'main',
+    handlebars: allowInsecurePrototypeAccess(_handlebars)
+}))
 app.set('view engine', 'handlebars')
 
 // app.get('/', (req, res) => {
@@ -37,11 +46,12 @@ app.get('/', (req, res) => {
         })
 })
 
+// NEW
 app.get('/reviews/new', (req,res) => {
-    res.render('reviews-new', {})
+    res.render('reviews-new', {title: "New Review"})
 })
 
-//Create
+// Create
 app.post('/reviews', (req,res) => {
     Reveiw.create(req.body).then((review) => {
         console.log(review)
@@ -59,6 +69,24 @@ app.get('/reviews/:id', (req, res) => {
         console.log(err.message)
     })
 })
+
+// EDIT
+app.get('/reviews/:id/edit', (req, res) => {
+    Reveiw.findById(req.params.id, function(err, review) {
+      res.render('reviews-edit', {review: review, title: "Edit Review"});
+    })
+  })
+
+//UPDATE
+app.put('/reviews/:id', (req, res) => {
+    Reveiw.findByIdAndUpdate(req.params.id, req.body)
+      .then(review => {
+        res.redirect(`/reviews/${review._id}`)
+      })
+      .catch(err => {
+        console.log(err.message)
+      })
+  })
 
 app.listen(3000, () => {
     console.log('App listening on port 3000!')
