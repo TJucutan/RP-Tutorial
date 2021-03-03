@@ -23,7 +23,7 @@ app.set('view engine', 'handlebars')
 //     res.render('home', { msg: 'Handlebars are Cool!'})
 // })
 
-const Reveiw = mongoose.model('Review', {
+const Review = mongoose.model('Review', {
     title: String,
     description: String,
     movieTitle: String,
@@ -37,7 +37,7 @@ const Reveiw = mongoose.model('Review', {
 // ]
 
 app.get('/', (req, res) => {
-    Reveiw.find().lean()
+    Review.find().lean()
         .then(reviews => {
             res.render('reviews-index', { reviews: reviews })
         })
@@ -62,7 +62,7 @@ app.post('/reviews', (req,res) => {
 })
 
 app.get('/reviews/:id', (req, res) => {
-    Reveiw.findById(req.params.id).lean()
+    Review.findById(req.params.id).lean()
     .then((review) => {
         res.render('reviews-show', { review: review })
     }).catch((err) => {
@@ -72,20 +72,30 @@ app.get('/reviews/:id', (req, res) => {
 
 // EDIT
 app.get('/reviews/:id/edit', (req, res) => {
-    Reveiw.findById(req.params.id, function(err, review) {
+    Review.findById(req.params.id, function(err, review) {
       res.render('reviews-edit', {review: review, title: "Edit Review"});
     })
   })
 
 //UPDATE
 app.put('/reviews/:id', (req, res) => {
-    Reveiw.findByIdAndUpdate(req.params.id, req.body)
+    Review.findByIdAndUpdate(req.params.id, req.body)
       .then(review => {
         res.redirect(`/reviews/${review._id}`)
       })
       .catch(err => {
         console.log(err.message)
       })
+  })
+
+  // DELETE
+app.delete('/reviews/:id', function (req, res) {
+    console.log("DELETE review")
+    Review.findByIdAndRemove(req.params.id).then((review) => {
+      res.redirect('/');
+    }).catch((err) => {
+      console.log(err.message);
+    })
   })
 
 app.listen(3000, () => {
