@@ -19,7 +19,7 @@ describe('Reviews', () => {
     after(() => {
         Review.deleteMany({title: 'Super Sweet Review'}).exec((err, reviews) => {
           console.log(reviews)
-        //   reviews.remove();
+        //   reviews.delete();
         })
       });
 
